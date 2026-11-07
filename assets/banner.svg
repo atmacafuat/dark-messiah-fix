@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-label="DMFix: Dark Messiah, past the intro">
+  <rect width="1200" height="300" rx="10" fill="#22272e"/>
+  <!-- address ruler along the bottom: the fix is about one address -->
+  <g stroke="#353c46" stroke-width="1">
+    <line x1="64" y1="236" x2="1136" y2="236"/>
+    <line x1="64" y1="230" x2="64" y2="242"/><line x1="332" y1="230" x2="332" y2="242"/>
+    <line x1="600" y1="230" x2="600" y2="242"/><line x1="868" y1="230" x2="868" y2="242"/>
+    <line x1="1136" y1="230" x2="1136" y2="242"/>
+  </g>
+  <rect x="332" y="222" width="150" height="28" rx="2" fill="#5aa594"/>
+  <text x="407" y="241" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="700" fill="#1a1e24">server.dll</text>
+  <g font-family="Consolas, 'Courier New', monospace" font-size="13" fill="#7d838c">
+    <text x="64" y="268">0x20000000</text>
+    <text x="332" y="268">0x22000000</text>
+    <text x="600" y="268">0x24000000</text>
+    <text x="868" y="268">0x2A000000</text>
+  </g>
+  <text x="64" y="128" font-family="Georgia, 'Times New Roman', serif" font-size="92" fill="#e4d9c6" letter-spacing="-1">DMFix</text>
+  <text x="68" y="176" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="30" fill="#e4d9c6">Dark Messiah of Might and Magic, past the intro.</text>
+</svg>

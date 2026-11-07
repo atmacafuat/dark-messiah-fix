@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 340" width="960" height="340" role="img" aria-label="Without DMFix a graphics driver sits at the address server.dll needs, server.dll is moved and the game crashes. With DMFix server.dll and client.dll load at their own addresses.">
+  <defs>
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#3b434e" stroke-width="3"/>
+    </pattern>
+    <style>
+      .addr { font: 14px Consolas, 'Courier New', monospace; fill: #9aa0a8; }
+      .lbl { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #e4d9c6; }
+      .dark { fill: #1a1e24; }
+      .row { font: italic 24px Georgia, 'Times New Roman', serif; fill: #e4d9c6; }
+    </style>
+  </defs>
+  <rect width="960" height="340" rx="10" fill="#22272e"/>
+  <g stroke="#353c46" stroke-dasharray="2 5">
+    <line x1="400" y1="26" x2="400" y2="300"/>
+    <line x1="590" y1="26" x2="590" y2="300"/>
+  </g>
+  <text class="addr" x="140" y="326" text-anchor="middle">0x20000000</text>
+  <text class="addr" x="400" y="326" text-anchor="middle">0x22000000</text>
+  <text class="addr" x="590" y="326" text-anchor="middle">0x24000000</text>
+  <text class="addr" x="860" y="326" text-anchor="middle">0x2A000000</text>
+
+  <!-- without -->
+  <text class="row" x="30" y="40">Without DMFix</text>
+  <rect x="20" y="54" width="920" height="84" rx="4" fill="#1a1e24"/>
+  <rect x="60" y="64" width="160" height="64" rx="3" fill="#353c46"/>
+  <text class="lbl" x="140" y="102" text-anchor="middle">engine.dll</text>
+  <rect x="370" y="64" width="230" height="64" rx="3" fill="#4a5361"/>
+  <text class="lbl" x="485" y="94" text-anchor="middle">graphics driver</text>
+  <text class="addr" x="485" y="114" text-anchor="middle" style="fill:#e4d9c6">igc32.dll</text>
+  <rect x="680" y="64" width="150" height="64" rx="3" fill="url(#hatch)" stroke="#c25d45" stroke-width="2"/>
+  <text class="lbl" x="755" y="102" text-anchor="middle">server.dll</text>
+  <path d="M846 70 l14 16 l-10 8 l16 22 l-8 6" stroke="#c25d45" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="878" y="104" font-family="Georgia, serif" font-style="italic" font-size="24" fill="#c25d45">crash</text>
+
+  <!-- with -->
+  <text class="row" x="30" y="196" style="fill:#5aa594">With DMFix</text>
+  <rect x="20" y="210" width="920" height="84" rx="4" fill="#1a1e24"/>
+  <rect x="60" y="220" width="160" height="64" rx="3" fill="#353c46"/>
+  <text class="lbl" x="140" y="258" text-anchor="middle">engine.dll</text>
+  <rect x="400" y="220" width="150" height="64" rx="3" fill="#5aa594"/>
+  <text class="lbl dark" x="475" y="258" text-anchor="middle">server.dll</text>
+  <rect x="590" y="220" width="130" height="64" rx="3" fill="#5aa594"/>
+  <text class="lbl dark" x="655" y="258" text-anchor="middle">client.dll</text>
+  <rect x="740" y="220" width="180" height="64" rx="3" fill="#4a5361"/>
+  <text class="lbl" x="830" y="250" text-anchor="middle">graphics driver</text>
+  <text class="addr" x="830" y="270" text-anchor="middle" style="fill:#e4d9c6">igc32.dll</text>
+</svg>
