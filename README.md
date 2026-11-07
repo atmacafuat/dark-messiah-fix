@@ -20,17 +20,19 @@ for current hardware. **It contains no game files**; it sits next to your own in
   table. If their preferred address (`ImageBase`, e.g. `0x22000000`) is already taken,
   Windows moves them, and the game reads an address that was never fixed up and crashes.
   Modern GPU drivers (Intel/Nvidia) often take that address.
-  DMFix starts the game suspended, reserves those ranges, and as soon as `engine.dll`
-  loads it releases them and loads both DLLs at their own address. The addresses come
-  from the DLL headers, nothing is hard-coded.
+  DMFix does what `mm.exe` does (adds `bin\` to PATH, loads `bin\launcher.dll`, calls
+  `LauncherMain`), but first loads both DLLs into its own process while their addresses are
+  still free. When the engine asks for them, Windows returns the copies already loaded.
+  No other process is touched, nothing is injected. The game runs as `DMFix.exe`.
 - Opens the game at your screen's own resolution, borderless windowed. Skips the intro.
+- `DMFix.exe` is Large Address Aware, so the game can use 4GB of memory instead of 2GB.
+  `mm.exe` is not modified.
 
 **One-time setup (`--setup`)**
 - **DXVK 3.1.1** (`d3d9.dll`, downloaded from the official GitHub release): turns DirectX 9
   into Vulkan. Smoother frame times, and avoids crashes in old D3D9 drivers. The game looks
   the same; no post-processing is added. An existing `d3d9.dll` is kept as `d3d9.dll.bak`.
-- **Large Address Aware** patch on `mm.exe` (4GB of memory instead of 2GB). Backup: `mm.exe.bak`.
-- High-performance GPU for `mm.exe` in Windows graphics settings (laptops pick Nvidia/AMD),
+- High-performance GPU for `mm.exe` and `DMFix.exe` in Windows graphics settings (laptops pick Nvidia/AMD),
   fullscreen optimizations off. Current user and `mm.exe` only.
 - `mm/cfg/autoexec.cfg`: the engine's highest settings (16x AF, 8x MSAA, HDR, expensive water,
   full LOD), FPS cap = your refresh rate, VSync on. Never overwrites an existing file.
@@ -43,7 +45,7 @@ for current hardware. **It contains no game files**; it sits next to your own in
 ## Uninstall
 
 Delete `DMFix.exe` and `d3d9.dll` (rename `d3d9.dll.bak` back if you had one).
-Rename `mm.exe.bak` back to `mm.exe`. Delete `mm/cfg/autoexec.cfg` to reset the settings.
+Delete `mm/cfg/autoexec.cfg` to reset the settings.
 
 ## Notes
 
@@ -53,10 +55,8 @@ Rename `mm.exe.bak` back to `mm.exe`. Delete `mm/cfg/autoexec.cfg` to reset the 
 
 ## Build
 
-```bash
-pip install pyinstaller
-pyinstaller --onefile --noconsole --name DMFix dmfix.py
-```
+Visual Studio (C++ workload), x86 toolchain: run `build.bat`. Output: `dist\DMFix.exe`.
+One C file, Win32 API only, no dependencies.
 
 DXVK is © Philip Rebohle and contributors, zlib license: https://github.com/doitsujin/dxvk
 
@@ -73,7 +73,7 @@ Dark Messiah yeni bilgisayarlarda intro'dan sonra `server.dll` içinde çöküyo
 çalıştır. Oyunu artık hep `DMFix.exe` ile aç.
 
 **Yaptıkları:** çökme düzeltmesi, ekranının kendi çözünürlüğünde kenarlıksız pencere,
-DXVK (DirectX 9 → Vulkan, görüntüye efekt eklemez), 4GB bellek yaması, laptopta harici
+DXVK (DirectX 9 → Vulkan, görüntüye efekt eklemez), 4GB bellek, laptopta harici
 ekran kartı, motorun en yüksek grafik ayarları ve ekran yenileme hızına göre FPS sınırı.
 
 Mesajlar Windows diline göre Türkçe ya da İngilizce çıkar; `--lang tr` ile zorlanabilir.
