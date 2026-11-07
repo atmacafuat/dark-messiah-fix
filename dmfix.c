@@ -123,6 +123,37 @@ static void set_reg(const wchar_t *key, const wchar_t *name, const wchar_t *val)
     }
 }
 
+/* The engine keeps its video options in the registry and reads them at startup;
+   console commands in autoexec.cfg do not override them. Highest values the game offers. */
+static void max_video_settings(void)
+{
+    static const struct { const wchar_t *k; DWORD v; } s[] = {
+        { L"mat_picmip", 0 },              /* texture detail: high */
+        { L"mat_forceaniso", 16 },         /* 16x anisotropic */
+        { L"mat_trilinear", 0 },
+        { L"mat_antialias", 8 },           /* 8x MSAA */
+        { L"mat_aaquality", 0 },
+        { L"mat_hdr_level", 2 },           /* full HDR */
+        { L"mat_parallaxmap", 1 },         /* parallax mapping (off by default) */
+        { L"mat_specular", 1 },
+        { L"mat_bumpmap", 1 },
+        { L"mat_vsync", 1 },
+        { L"r_rootlod", 0 },               /* model detail: high */
+        { L"r_shadowrendertotexture", 1 },
+        { L"r_waterforceexpensive", 1 },
+        { L"r_waterforcereflectentities", 1 },
+        { L"mm_fxquality_level", 2 },      /* Dark Messiah effects quality: high */
+        { L"ScreenWindowed", 1 },
+    };
+    HKEY k;
+    int i;
+    if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Source\\mm\\Settings", 0, NULL, 0,
+                        KEY_SET_VALUE, NULL, &k, NULL) != ERROR_SUCCESS) return;
+    for (i = 0; i < (int)(sizeof s / sizeof s[0]); i++)
+        RegSetValueExW(k, s[i].k, 0, REG_DWORD, (const BYTE *)&s[i].v, sizeof(DWORD));
+    RegCloseKey(k);
+}
+
 static int write_autoexec(void)
 {
     wchar_t p[MAX_PATH];
@@ -133,12 +164,10 @@ static int write_autoexec(void)
     if (GetFileAttributesW(p) != INVALID_FILE_ATTRIBUTES) return 0; /* never overwrite */
     if (!(f = _wfopen(p, L"w"))) return 0;
     fprintf(f,
-        "// DMFix - highest engine settings\n"
+        "// DMFix - settings the engine does not keep in the registry\n"
         "mat_queue_mode 0\nsnd_mixahead 0.1\n"
-        "fps_max %d\nmat_vsync 1\nmat_triplebuffered 1\n"
-        "mat_picmip -1\nmat_forceaniso 16\nmat_trilinear 0\nmat_antialias 8\nmat_hdr_level 2\n"
-        "r_rootlod 0\nr_lod 0\nr_shadowrendertotexture 1\n"
-        "r_waterforceexpensive 1\nr_waterforcereflectentities 1\ncl_detaildist 2000\nr_decals 2048\n",
+        "fps_max %d\nmat_triplebuffered 1\n"
+        "r_lod 0\ncl_detaildist 2000\ncl_detailfade 400\nr_decals 2048\n",
         screen_hz());
     fclose(f);
     return 1;
@@ -151,8 +180,8 @@ static void setup(void)
     wcscat(m, T(L"Setup complete:\n\n", L"Kurulum tamam:\n\n"));
     wcscat(m, install_dxvk() ? T(L"- DXVK " DXVK_VERSION L" installed (DirectX 9 -> Vulkan)\n",
                                  L"- DXVK " DXVK_VERSION L" kuruldu (DirectX 9 -> Vulkan)\n")
-                             : T(L"- DXVK could not be downloaded; the game still works without it\n",
-                                 L"- DXVK indirilemedi; oyun onsuz da calisir\n"));
+                             : T(L"- DXVK could not be downloaded. Check your internet and run setup again;\n  without it the game may crash while loading.\n",
+                                 L"- DXVK indirilemedi. Interneti kontrol edip kurulumu tekrar calistir;\n  onsuz oyun yuklenirken cokebilir.\n"));
     /* high-performance GPU and no fullscreen optimizations, current user and these two exes only */
     set_reg(L"Software\\Microsoft\\DirectX\\UserGpuPreferences", exe, L"GpuPreference=2;");
     set_reg(L"Software\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers", exe, L"~ DISABLEDXMAXIMIZEDWINDOWEDMODE HIGHDPIAWARE");
@@ -160,6 +189,9 @@ static void setup(void)
     set_reg(L"Software\\Microsoft\\DirectX\\UserGpuPreferences", exe, L"GpuPreference=2;");
     set_reg(L"Software\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers", exe, L"~ DISABLEDXMAXIMIZEDWINDOWEDMODE HIGHDPIAWARE");
     wcscat(m, T(L"- High-performance GPU selected\n", L"- Yuksek performansli GPU secildi\n"));
+    max_video_settings();
+    wcscat(m, T(L"- Highest video settings (8x MSAA, 16x AF, HDR, parallax, high effects, VSync)\n",
+                L"- En yuksek video ayarlari (8x MSAA, 16x AF, HDR, paralaks, yuksek efekt, VSync)\n"));
     if (write_autoexec()) wcscat(m, T(L"- mm/cfg/autoexec.cfg written\n", L"- mm/cfg/autoexec.cfg yazildi\n"));
     wcscat(m, T(L"\nStart the game with DMFix.exe from now on.", L"\nOyunu artik DMFix.exe ile ac."));
     info(m);
@@ -221,6 +253,12 @@ int WINAPI wWinMain(HINSTANCE inst, HINSTANCE prev, LPWSTR cmdline, int show)
     wcsncpy(env, m, 32768);
     GetEnvironmentVariableW(L"PATH", env + wcslen(env), (DWORD)(32768 - wcslen(env)));
     SetEnvironmentVariableW(L"PATH", env);
+
+    /* Without a D3D9 wrapper the game goes through the old system D3D9 path, which
+       crashes in engine.dll on current drivers. */
+    if (!exists(L"d3d9.dll"))
+        fail(T(L"DXVK (d3d9.dll) is missing, so the game may crash while loading.\nRun DMFix_Setup.bat once.",
+               L"DXVK (d3d9.dll) yok, oyun yuklenirken cokebilir.\nBir kez DMFix_Setup.bat calistir."));
 
     preload(L"mm\\bin\\server.dll");
     preload(L"mm\\bin\\client.dll");

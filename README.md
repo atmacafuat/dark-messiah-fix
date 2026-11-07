@@ -34,8 +34,12 @@ for current hardware. **It contains no game files**; it sits next to your own in
   the same; no post-processing is added. An existing `d3d9.dll` is kept as `d3d9.dll.bak`.
 - High-performance GPU for `mm.exe` and `DMFix.exe` in Windows graphics settings (laptops pick Nvidia/AMD),
   fullscreen optimizations off. Current user only.
-- `mm/cfg/autoexec.cfg`: the engine's highest settings (16x AF, 8x MSAA, HDR, expensive water,
-  full LOD), FPS cap = your refresh rate, VSync on. Never overwrites an existing file.
+- **Highest video settings**, written where the engine actually reads them
+  (`HKCU\Software\Valve\Source\mm\Settings`): 8x MSAA, 16x anisotropic filtering, full HDR,
+  parallax mapping (off by default), high effects quality, high texture/model detail,
+  reflective water, VSync. `autoexec.cfg` cannot override these, which is why most guides miss it.
+- `mm/cfg/autoexec.cfg`: FPS cap = your refresh rate, full LOD and detail distance.
+  Never overwrites an existing file.
 
 ## Options
 
@@ -45,7 +49,7 @@ for current hardware. **It contains no game files**; it sits next to your own in
 ## Uninstall
 
 Delete `DMFix.exe` and `d3d9.dll` (rename `d3d9.dll.bak` back if you had one).
-Delete `mm/cfg/autoexec.cfg` to reset the settings.
+Delete `mm/cfg/autoexec.cfg`, and change video settings back in the game's Options menu.
 
 ## Notes
 
