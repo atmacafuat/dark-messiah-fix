@@ -254,6 +254,15 @@ int WINAPI wWinMain(HINSTANCE inst, HINSTANCE prev, LPWSTR cmdline, int show)
     GetEnvironmentVariableW(L"PATH", env + wcslen(env), (DWORD)(32768 - wcslen(env)));
     SetEnvironmentVariableW(L"PATH", env);
 
+    /* Translation patches add a "custom" search path in front of mm\. The engine then
+       looks for cutscene videos in custom\media, finds nothing, and the chapter change
+       after the first level dies in tier0. Point custom\media at mm\media. */
+    if (exists(L"custom") && !exists(L"custom\\media") && exists(L"mm\\media")) {
+        wchar_t cmd[1024];
+        swprintf(cmd, 1024, L"cmd.exe /c mklink /J \"%s\\custom\\media\" \"%s\\mm\\media\"", dir, dir);
+        run(cmd);
+    }
+
     /* Without a D3D9 wrapper the game goes through the old system D3D9 path, which
        crashes in engine.dll on current drivers. */
     if (!exists(L"d3d9.dll"))
