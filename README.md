@@ -33,7 +33,7 @@ for current hardware. **It contains no game files**; it sits next to your own in
   into Vulkan. Smoother frame times, and avoids crashes in old D3D9 drivers. The game looks
   the same; no post-processing is added. An existing `d3d9.dll` is kept as `d3d9.dll.bak`.
 - High-performance GPU for `mm.exe` and `DMFix.exe` in Windows graphics settings (laptops pick Nvidia/AMD),
-  fullscreen optimizations off. Current user and `mm.exe` only.
+  fullscreen optimizations off. Current user only.
 - `mm/cfg/autoexec.cfg`: the engine's highest settings (16x AF, 8x MSAA, HDR, expensive water,
   full LOD), FPS cap = your refresh rate, VSync on. Never overwrites an existing file.
 
